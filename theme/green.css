@@ -1,0 +1,31 @@
+.headersection {
+    	background: green none repeat scroll 0 0;    
+				}
+		.icon a {
+    	background: #1cc11c none repeat scroll 0 0;
+                }
+         .searchbtn input[type="text"] {
+   			 background: #34de34;
+				}
+		.navsection {
+    background: none repeat scroll 0 0 #34DE51;
+					}
+		.samepost h2 a {
+    color: #34de51;
+				}
+	.maincontent {
+    background: #b3f5be none repeat scroll 0 0;
+					}
+	.sidebar {
+    background: #b3f5be none repeat scroll 0 0;
+			}
+	.samesidebar h2 {
+    background: #e2a535 none repeat scroll 0 0;
+    border-bottom: 2px solid #b7801c;
+    color: #333;
+    }
+    .footersection {
+    height: 90px;
+    background: #008000;
+    text-align: center;
+     }

@@ -1,0 +1,189 @@
+﻿<?php include("inc/header.php"); ?>
+<?php include("inc/siderbar.php"); ?>
+        <div class="grid_10">
+
+            <div class="box round first grid">
+                <h2>Add New Post</h2>
+                <div class="block">               
+                 <form action="" method="post" enctype="multipart/form-data">
+                    <table class="form">
+            <?php
+            if (isset($_POST['submit']) && $_POST['submit'] == "Save")
+            {
+                $title      =mysqli_real_escape_string($db->link,$_POST['title']);
+                $cat        =mysqli_real_escape_string($db->link,$_POST['cat']);
+                $body       =mysqli_real_escape_string($db->link,$_POST['body']);
+                $tags       =mysqli_real_escape_string($db->link,$_POST['tags']);
+                $autor      =mysqli_real_escape_string($db->link,$_POST['autor']);
+                $user_role  =mysqli_real_escape_string($db->link,$_POST['hidden']);
+                $errors     =[];
+
+                //image
+                    $permited  = array('jpg', 'jpeg', 'png', 'gif');
+                    $file_name = $_FILES['image']['name'];
+                    $file_size = $_FILES['image']['size'];
+                    $file_temp = $_FILES['image']['tmp_name'];
+
+                    $div = explode('.', $file_name);
+                    $file_ext = strtolower(end($div));
+                    $unique_image = rand(1000,9999).'.'.$file_ext;
+                    $uploaded_image = "upload/".$unique_image;
+
+            if (isset($title,$cat,$body,$tags,$autor,$file_name))
+            {
+                if (empty($title) && empty($cat) && empty($body) && empty($tags) && empty($autor) )
+                 {
+                    echo "all field empty";
+                 }
+                else { 
+                  if(empty($title))
+                 {
+                    $errors[] = "Title is empty";
+                 }
+                if (empty($body)) {
+                     $errors[] =  "Body is empty";
+                 }
+                if(empty($cat))
+                 {
+                    $errors[] =  " Autor is empty";
+                 }
+                  if(empty($tags))
+                 {
+                    $errors[] = "Tags is empty";
+                 }
+                  if(empty($autor))
+                 {
+                    $errors[] =  " Autor is empty";
+                 }
+                 if(empty($file_name))
+                 {
+                    $errors[] =  "File name empty";
+                 }
+                 else if($file_size > 1048567)
+                 {
+                    $errors[]="photo  upload 3 MB";
+                 }
+                 elseif (in_array($file_ext, $permited) === false) {
+                     $errors= "Plz select image type";
+                 }
+
+                    }
+                if (!empty($errors)) 
+                {
+                foreach ($errors as $key => $value) 
+                {
+                    echo $value;
+                    echo "<br>";
+                }
+            }
+                else
+                {
+                     move_uploaded_file($file_temp, $uploaded_image);
+                     $updatequery="INSERT INTO db(cat,title,body,image,autor,tags,user_roles) Values('$cat','$title','$body','$unique_image','$autor','$tags',$user_role)";
+                     $updatedata=$db->insert($updatequery);
+                     if ($updatedata) 
+                     {
+                         echo "insert data";
+                     }
+                     else
+                     {
+                        echo "can't data";
+                     }
+                }
+            }
+            }
+            ?>
+                       
+                        <tr>
+                            <td>
+                                <label>Title</label>
+                            </td>
+                            <td>
+                                <input type="text" name="title" placeholder="Enter Post Title..." class="medium" />
+                            </td>
+                        </tr>
+
+                     
+                        <tr>
+                            <td>
+                                <label>Category</label>
+                            </td>
+                            <td>
+                                <select id="select" name="cat">
+                                    <option value="">Select One</option>
+                                    <?php
+                                    $query="SELECT * FROM db_categories";
+                                    $dbquery=$db->select($query);
+                                    if ($dbquery) {
+                                        while($result=$dbquery->fetch_assoc())
+                                        {
+                                    ?>
+                                    <option value="<?php echo $result['id'];?>"><?php echo $result['name'];?></option>
+                                    <?php }}?>
+                                </select>
+                            </td>
+                        </tr>
+                   
+                        <tr>
+                            <td>
+                                <label>Upload Image</label>
+                            </td>
+                            <td>
+                                <input type="file" name="image" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: top; padding-top: 9px;">
+                                <label>Content</label>
+                            </td>
+                            <td>
+                                <textarea class="tinymce" name="body"></textarea>
+                            </td>
+                        </tr>
+                          <tr>
+                            <td>
+                                <label>TAGS</label>
+                            </td>
+                            <td>
+                                <input type="text" name="tags" placeholder="Enter Post TAGS..." class="medium" />
+                            </td>
+                        </tr>
+                                                <tr>
+                            <td>
+                                <label>AUTOR</label>
+                            </td>
+                            <td>
+                                <input type="text" name="autor" value="<?php if(session::get('userRole')=='1'){echo "Autor";}else if(session::get('userRole')=='0'){echo "Admin";}else{echo "Editor";} ?>"  class="medium" />
+                            </td>
+                        </tr>
+                              </tr>
+                          <tr>
+                            <td>
+                                <label></label>
+                            </td>
+                          <td>
+                                <input type="hidden" name="hidden" value="<?php echo session::get('userid'); ?>" class="medium" />
+                          </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <input type="submit" name="submit" Value="Save" />
+                            </td>
+                        </tr>
+
+                    </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+    <script src="js/tiny-mce/jquery.tinymce.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            setupTinyMCE();
+            setDatePicker('date-picker');
+            $('input[type="checkbox"]').fancybutton();
+            $('input[type="radio"]').fancybutton();
+        });
+    </script>
+<?php include("inc/footer.php"); ?>
